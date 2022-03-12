@@ -1,0 +1,216 @@
+# flair project file
+Version: 300
+Mode: fluka
+Title: neutron production from 100 MeV protons on 0.01 mm thick Fe target
+md5: f83c997681189314771d5652c2cd8776
+Input:
+TITLE
+	neutron production from 100 MeV protons on 0.01 mm thick Fe target
+GLOBAL ,,,, 1. 1.
+DEFAULTS PRECISIO
+BEAM PROTON -0.1,,,,, 1.
+	@select=1
+BEAMPOS , 0.0 0.0 -10.
+PHYSICS COALESCE 1.
+GEOBEGIN COMBNAME
+*Black body
+SPH blkbody 0.0 0.0 0.0 300.
+*Void sphere
+SPH shell1 0.0 0.0 0.0 100.
+SPH shell2 0.0 0.0 0.0 100.01
+*Cylindrical target 0.001 cm thick, 2.5 cm radius
+RCC Fetarget 0.0 0.0 0.0 0.0 0.0 0.001 2.5
+*0-10 degree sperical cap detector area at 1 m distance
+XYP deg010 98.4807753012208
+*40-50 degree sperical cap detector area at 1 m distance
+XYP deg040 76.6044443118978
+XYP deg050 64.2787609686539
+END
+*Black hole
+REGION BLKBODY 5
+	+blkbody -shell2
+*Spherical space between target and inner shell
+REGION SPACE 5
+	+shell1 -Fetarget | +shell2 -shell1 +deg010 -deg040 | +shell2 -shell1 +deg050
+*Target
+REGION TARGET 5
+	+Fetarget
+*Forward detector area 0-10 deg
+REGION FOR010 5
+	+shell2 -shell1 -deg010
+*Forward detector area 45 deg (40-50 deg)
+REGION FOR045 5
+	+shell2 -shell1 +deg040 -deg050
+END
+GEOEND
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+ASSIGNMA , BLCKHOLE BLKBODY
+ASSIGNMA , VACUUM SPACE
+ASSIGNMA , VACUUM FOR010 FOR045
+ASSIGNMA , IRON TARGET
+LOW-NEUT , 260. 42. 0.02 0.0
+LAM-BIAS INEPRI,, 1. IRON PROTON
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+SCORE , ENERGY PROTON NEUTRON
+USRBDX n010det 111. NEUTRON -31. SPACE FOR010 954.557031 0.110 1.E-14 120. 6.28318531 \
+	 0.0 1.
+USRBDX p010det 111. PROTON -41. SPACE FOR010 954.557031 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+USRBDX a010det 111. 4-HELIUM -51. SPACE FOR010 954.557031 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+USRBDX n045det 111. NEUTRON -32. SPACE FOR045 7744.45525 0.110 1.E-14 120. 6.28318531 \
+	 0.0 1.
+USRBDX p045det 111. PROTON -42. SPACE FOR045 7744.45525 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+USRBDX a045det 111. 4-HELIUM -52. SPACE FOR045 7744.45525 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+RANDOMIZ , 1.
+START , 2000000.,,,, 0.0
+STOP
+EndInput
+
+Page: Flair
+plotengine: Gnuplot
+
+# Run information
+Run: <default>
+	Last:     10
+	Status:   3
+	StartRun: 1646664853
+End
+Geometry: Geometry
+	Layer: 3D
+		3D: 1
+		3D._visible: 1
+		3D.edgedetect: 1
+		3D.projection: 1
+		Options.viewport: 0
+		Show: 0
+		Show.lattice: 1
+		Show.voxel: 1
+	End
+End
+
+# Plots information
+Plot: Red
+	Type: Geometry
+	basisu: 0 0 1
+	basisv: 1 0 0
+	coord: Z-X
+	extends: 100 50.3145
+	grid: 0
+	layer: Media
+	origin: -1.84164 0 -0.65947
+End
+Plot: Green
+	Type: Geometry
+	basisu: 0.836516 0.0173376 0.547668
+	basisv: 0.224144 0.901221 -0.370891
+	extends: 6.49055 3.27255
+	grid: 0
+	layer: 3D
+	origin: -0.157654 -0.20084 0.0108519
+End
+Plot: Blue
+	Type: Geometry
+	basisu: 0 0 1
+	coord: Z-Y
+	extends: 6.49055 3.25208
+	grid: 0
+	layer: Media
+	origin: 0 -0.243038 0.0730742
+End
+Plot: Magenta
+	Type: Geometry
+	coord: X-Y
+	extends: 11.2157 5.6314
+	grid: 0
+	layer: 3D
+End
+Plot: bias1_31_plot
+	Type: USR-1D
+	file.0: bias1_31_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D bias1 31
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias1_32_plot
+	Type: USR-1D
+	file.0: bias1_32_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D bias1 32
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias1_41_plot
+	Type: USR-1D
+	file.0: bias1_41_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D bias1 41
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias1_42_plot
+	Type: USR-1D
+	file.0: bias1_42_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D bias1 42
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias1_51_plot
+	Type: USR-1D
+	file.0: bias1_51_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D bias1 51
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias1_52_plot
+	Type: USR-1D
+	file.0: bias1_52_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	name.1: #
+	ndetectors: 2
+	title: USR-1D bias1 52
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	y.1: 0
+	ylog: 1
+End
