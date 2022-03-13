@@ -1,0 +1,132 @@
+TITLE
+neutron production from 100 MeV protons on 0.1 mm thick Fe target
+GLOBAL                                          1.        1.
+DEFAULTS                                                              PRECISIO
+BEAM           -0.05                                                1.PROTON
+BEAMPOS          0.0       0.0      -10.
+PHYSICS           1.                                                  COALESCE
+GEOBEGIN                                                              COMBNAME
+    0    0          
+* Black body
+SPH blkbody    0.0 0.0 0.0 300.
+* Void sphere
+SPH shell1     0.0 0.0 0.0 100.
+SPH shell2     0.0 0.0 0.0 100.01
+* Cylindrical target 0.01 cm thick, 2.5 cm radius
+RCC Fetarget   0.0 0.0 0.0 0.0 0.0 0.01 2.5
+TRC bakvac     0.0 0.0 -30.1 0.0 0.0 30.12 9.99 2.52
+XYP tarlim     -0.01
+* 0-10 degree sperical cap detector area at 1 m distance
+XYP deg010     98.4807753012208
+* 40-50 degree sperical cap detector area at 1 m distance
+XYP deg040     76.6044443118978
+XYP deg050     64.2787609686539
+ZCC concyl     0.0 0.0 10.
+XYP con30      -30.
+XYP con35      -35.
+XYP con40      -40.
+XYP con45      -45.
+XYP con50      -50.
+XYP con55      -55.
+XYP con60      -60.
+XYP con65      -65.
+XYP con70      -70.
+XYP con75      -75.
+XYP con80      -80.
+XYP con81      -81.
+END
+* Black hole
+BLKBODY      5 +blkbody -shell2
+* Spherical space between target and inner shell
+SPACE        5 +shell1 -con30 -bakvac | +shell1 -concyl +con30 -con81 | +shell1 +con81
+               | +shell2 -shell1 +deg010 -deg040 | +shell2 -shell1 +deg050
+BAKSPA       5 +bakvac +tarlim  -con30
+TARVAC       5 +bakvac -Fetarget -tarlim
+* Target
+TARGET       5 +Fetarget
+* Forward detector area 0-10 deg
+FOR010       5 +shell2 -shell1 -deg010
+* Forward detector area 45 deg (40-50 deg)
+FOR045       5 +shell2 -shell1 +deg040 -deg050
+* Cylindrical concrete shield behind target, 5s0 cm long, 10 cm diameter, part 1
+CONSH1       5 +concyl +con30 -con35
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 2
+CONSH2       5 +concyl +con35 -con40
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 3
+CONSH3       5 +concyl +con40 -con45
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 4
+CONSH4       5 +concyl +con45 -con50
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 5
+CONSH5       5 +concyl +con50 -con55
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 6
+CONSH6       5 +concyl +con55 -con60
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 7
+CONSH7       5 +concyl +con60 -con65
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 8
+CONSH8       5 +concyl +con65 -con70
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 5
+CONSH9       5 +concyl +con70 -con75
+* Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 10
+CONSH10      5 +concyl +con75 -con80
+* Backwards detector after concrete cylinder
+BACK00       5 +concyl +con80 -con81
+END
+GEOEND
+* Concrete
+* Concrete has a wide variation in density and composition. The above
+* description is for poured structural concrete with 10% moisture
+* content. Concrete block will have a density of about 2.05 g/cm3.
+* Ranges of concrete composition are : C (8-25%), O (38-60%), Si (8-18%).
+* Concrete composition can be analyzed cheaply by commercial laboratories.
+MATERIAL                            2.34                              Concrete
+COMPOUND         23.    CARBON       40.    OXYGEN       12.   SILICONConcrete
+COMPOUND         12.   CALCIUM       10.  HYDROGEN        2.  MAGNESIUConcrete
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+ASSIGNMA    BLCKHOLE   BLKBODY
+ASSIGNMA      VACUUM     SPACE
+ASSIGNMA      VACUUM    BAKSPA    TARVAC
+ASSIGNMA      VACUUM    BACK00
+ASSIGNMA      VACUUM    FOR010    FOR045
+ASSIGNMA        IRON    TARGET
+ASSIGNMA    Concrete    CONSH1   CONSH10
+LOW-NEUT        260.       42.      0.02       0.0
+LAM-BIAS                    1.      IRON    PROTON                    INEPRI
+BIASING           1.                  1.    TARGET
+BIASING           1.                  1.     SPACE
+BIASING           1.                  1.    TARVAC
+BIASING           1.                  1.    BAKSPA
+BIASING           1.                  1.    CONSH1
+BIASING           1.                  1.    CONSH2
+BIASING           1.                  1.    CONSH3
+BIASING           1.                  1.    CONSH4
+BIASING           1.                  1.    CONSH5
+BIASING           1.                  1.    CONSH6
+BIASING           1.                  1.    CONSH7
+BIASING           1.                  1.    CONSH8
+BIASING           1.                  1.    CONSH9
+BIASING           1.                  1.   CONSH10
+BIASING           1.                  1.    BACK00
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+SCORE         ENERGY    PROTON   NEUTRON
+USRBDX          111.   NEUTRON      -31.     SPACE    FOR010954.557031n010det
+USRBDX         0.110    1.E-14      120.6.28318531       0.0        1. &
+USRBDX          111.    PROTON      -41.     SPACE    FOR010954.557031p010det
+USRBDX         0.110       0.0      110.6.28318531       0.0        1. &
+USRBDX          111.   NEUTRON      -32.     SPACE    FOR0457744.45525n045det
+USRBDX         0.110    1.E-14      120.6.28318531       0.0        1. &
+USRBDX          111.    PROTON      -42.     SPACE    FOR0457744.45525p045det
+USRBDX         0.110       0.0      110.6.28318531       0.0        1. &
+USRBDX          111.   NEUTRON      -51.    BAKSPA    CONSH1314.159265ncon1bx
+USRBDX         0.110    1.E-14      120.6.28318531       0.0        1. &
+USRBDX          111.   NEUTRON      -52.   CONSH10    BACK00314.159265ncon10bx
+USRBDX         0.110    1.E-14      180.6.28318531       0.0        1. &
+USRTRACK               NEUTRON      -61.    CONSH1  1570.796      180.nCon1tr
+USRTRACK       0.110    1.E-14                                         &
+USRTRACK               NEUTRON      -62.   CONSH10  1570.796      180.nCon10tr
+USRTRACK       0.110    1.E-14                                         &
+USRBIN           10.   NEUTRON      -71.       15.       15.       15.nflux
+USRBIN          -15.      -15.      -85.       60.       60.      200. &
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+RANDOMIZ          1.
+START       2000000.                                     0.0
+STOP
