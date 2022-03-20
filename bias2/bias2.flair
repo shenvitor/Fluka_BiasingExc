@@ -1,0 +1,336 @@
+# flair project file
+Version: 300
+Mode: fluka
+Title: neutron production from 100 MeV protons on 0.1 mm thick Fe target
+md5: 3e9ae6604a5311059f56156539035486
+Input:
+TITLE
+	neutron production from 100 MeV protons on 0.1 mm thick Fe target
+GLOBAL ,,,, 1. 1.
+DEFAULTS PRECISIO
+BEAM PROTON -0.05,,,,, 1.
+BEAMPOS , 0.0 0.0 -10.
+PHYSICS COALESCE 1.
+GEOBEGIN COMBNAME
+*Black body
+SPH blkbody 0.0 0.0 0.0 300.
+*Void sphere
+SPH shell1 0.0 0.0 0.0 100.
+SPH shell2 0.0 0.0 0.0 100.01
+*Cylindrical target 0.01 cm thick, 2.5 cm radius
+RCC Fetarget 0.0 0.0 0.0 0.0 0.0 0.01 2.5
+TRC bakvac 0.0 0.0 -30.1 0.0 0.0 30.12 9.99 2.52
+XYP tarlim -0.01
+*0-10 degree sperical cap detector area at 1 m distance
+XYP deg010 98.4807753012208
+*40-50 degree sperical cap detector area at 1 m distance
+XYP deg040 76.6044443118978
+XYP deg050 64.2787609686539
+ZCC concyl 0.0 0.0 10.
+XYP con30 -30.
+XYP con35 -35.
+XYP con40 -40.
+XYP con45 -45.
+XYP con50 -50.
+XYP con55 -55.
+XYP con60 -60.
+XYP con65 -65.
+XYP con70 -70.
+XYP con75 -75.
+XYP con80 -80.
+XYP con81 -81.
+END
+*Black hole
+REGION BLKBODY 5
+	+blkbody -shell2
+*Spherical space between target and inner shell
+REGION SPACE 5
+	+shell1 -con30 -bakvac | +shell1 -concyl +con30 -con81 | +shell1 +con81
+	| +shell2 -shell1 +deg010 -deg040 | +shell2 -shell1 +deg050
+REGION BAKSPA 5
+	+bakvac +tarlim  -con30
+REGION TARVAC 5
+	+bakvac -Fetarget -tarlim
+*Target
+REGION TARGET 5
+	+Fetarget
+*Forward detector area 0-10 deg
+REGION FOR010 5
+	+shell2 -shell1 -deg010
+*Forward detector area 45 deg (40-50 deg)
+REGION FOR045 5
+	+shell2 -shell1 +deg040 -deg050
+*Cylindrical concrete shield behind target, 5s0 cm long, 10 cm diameter, part 1
+REGION CONSH1 5
+	+concyl +con30 -con35
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 2
+REGION CONSH2 5
+	+concyl +con35 -con40
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 3
+REGION CONSH3 5
+	+concyl +con40 -con45
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 4
+REGION CONSH4 5
+	+concyl +con45 -con50
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 5
+REGION CONSH5 5
+	+concyl +con50 -con55
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 6
+REGION CONSH6 5
+	+concyl +con55 -con60
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 7
+REGION CONSH7 5
+	+concyl +con60 -con65
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 8
+REGION CONSH8 5
+	+concyl +con65 -con70
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 5
+REGION CONSH9 5
+	+concyl +con70 -con75
+*Cylindrical concrete shield behind target, 50 cm long, 10 cm diameter, part 10
+REGION CONSH10 5
+	+concyl +con75 -con80
+*Backwards detector after concrete cylinder
+REGION BACK00 5
+	+concyl +con80 -con81
+END
+GEOEND
+*Concrete
+*Concrete has a wide variation in density and composition. The above
+*description is for poured structural concrete with 10% moisture
+*content. Concrete block will have a density of about 2.05 g/cm3.
+*Ranges of concrete composition are : C (8-25%), O (38-60%), Si (8-18%).
+*Concrete composition can be analyzed cheaply by commercial laboratories.
+MATERIAL Concrete,,, 2.34
+COMPOUND Concrete 23. CARBON 40. OXYGEN 12. SILICON 12. CALCIUM 10. HYDROGEN 2. MAGNESIU
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+ASSIGNMA , BLCKHOLE BLKBODY
+ASSIGNMA , VACUUM SPACE
+ASSIGNMA , VACUUM BAKSPA TARVAC
+ASSIGNMA , VACUUM BACK00
+ASSIGNMA , VACUUM FOR010 FOR045
+ASSIGNMA , IRON TARGET
+ASSIGNMA , Concrete CONSH1 CONSH10
+LOW-NEUT , 260. 42. 0.02 0.0
+LAM-BIAS INEPRI,, 1. IRON PROTON
+BIASING , 1.,, 1. TARGET
+BIASING , 1.,, 1. SPACE
+BIASING , 1.,, 1. TARVAC
+BIASING , 1.,, 1. BAKSPA
+BIASING , 1.,, 1. CONSH1
+BIASING , 1.,, 1. CONSH2
+BIASING , 1.,, 1. CONSH3
+BIASING , 1.,, 1. CONSH4
+BIASING , 1.,, 1. CONSH5
+BIASING , 1.,, 1. CONSH6
+BIASING , 1.,, 1. CONSH7
+BIASING , 1.,, 1. CONSH8
+BIASING , 1.,, 1. CONSH9
+BIASING , 1.,, 1. CONSH10
+BIASING , 1.,, 1. BACK00
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+SCORE , ENERGY PROTON NEUTRON
+USRBDX n010det 111. NEUTRON -31. SPACE FOR010 954.557031 0.110 1.E-14 120. 6.28318531 \
+	 0.0 1.
+USRBDX p010det 111. PROTON -41. SPACE FOR010 954.557031 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+USRBDX n045det 111. NEUTRON -32. SPACE FOR045 7744.45525 0.110 1.E-14 120. 6.28318531 \
+	 0.0 1.
+USRBDX p045det 111. PROTON -42. SPACE FOR045 7744.45525 0.110 0.0 110. 6.28318531 \
+	 0.0 1.
+USRBDX ncon1bx 111. NEUTRON -51. BAKSPA CONSH1 314.159265 0.110 1.E-14 120. 6.28318531 \
+	 0.0 1.
+USRBDX ncon10bx 111. NEUTRON -52. CONSH10 BACK00 314.159265 0.110 1.E-14 180. 6.28318531 \
+	 0.0 1.
+USRTRACK nCon1tr,, NEUTRON -61. CONSH1 1570.796 180. 0.110 1.E-14
+USRTRACK nCon10tr,, NEUTRON -62. CONSH10 1570.796 180. 0.110 1.E-14
+USRBIN nflux 10. NEUTRON -71. 15. 15. 15. -15. -15. -85. 60. 60. 200.
+*..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+RANDOMIZ , 1.
+START , 2000000.,,,, 0.0
+STOP
+EndInput
+
+Page: Input
+plotengine: Gnuplot
+
+# Run information
+Run: <default>
+	Last:     10
+	Status:   3
+	StartRun: 1647122536
+End
+Geometry: Geometry
+	Layer: 3D
+		3D: 1
+		3D._visible: 1
+		3D.edgedetect: 1
+		3D.projection: 1
+		Show: 0
+		Show.lattice: 1
+		Show.voxel: 1
+	End
+End
+
+# Plots information
+Plot: Red
+	Type: Geometry
+	basisu: 0 0 1
+	basisv: 1 0 0
+	coord: Z-X
+	extends: 7.78866 3.91882
+	grid: 0
+	layer: Media
+	origin: -0.558723 0 -3.79509
+End
+Plot: Green
+	Type: Geometry
+	basisu: 0.358417 -0.00790333 0.933528
+	basisv: 0.12298 0.99165 -0.0388214
+	extends: 6.49055 3.27255
+	grid: 0
+	layer: 3D
+	origin: -2.0824 -0.0573259 -3.28514
+End
+Plot: Blue
+	Type: Geometry
+	basisu: 0 0 1
+	coord: Z-Y
+	extends: 9.34639 4.68299
+	grid: 0
+	layer: Media
+	origin: 0 -0.205221 -4.88781
+End
+Plot: Magenta
+	Type: Geometry
+	coord: X-Y
+	extends: 6.49057 3.25892
+	grid: 0
+	layer: 3D
+	origin: -0.539092 -0.312856 0.001
+End
+Plot: bias2_31_plot
+	Type: USR-1D
+	file.0: bias2_31_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 31
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_32_plot
+	Type: USR-1D
+	file.0: bias2_32_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 32
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_41_plot
+	Type: USR-1D
+	file.0: bias2_41_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 41
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_42_plot
+	Type: USR-1D
+	file.0: bias2_42_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 42
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_51_plot
+	Type: USR-1D
+	file.0: bias2_51_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 51
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_52_plot
+	Type: USR-1D
+	file.0: bias2_52_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 52
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_61_plot
+	Type: USR-1D
+	file.0: bias2_61_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 61
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_62_plot
+	Type: USR-1D
+	file.0: bias2_62_tab.lis
+	grid: 0
+	lc.0: red
+	lw.0: 2
+	name.0: Detector 1
+	ndetectors: 1
+	title: USR-1D non-bias2 62
+	x.0: 2
+	xlog: 1
+	y.0: 0
+	ylog: 1
+End
+Plot: bias2_71_plot
+	Type: USRBIN
+	cblog: 1
+	cbtics: 1
+	datafile: bias2_71.bnn
+	grid: 0
+	hist: 2D Projection
+	int: 2.0235293878065778E-002
+	max: 3.34011529E-05
+	min: 4.29215311E-13
+	proj: Y
+	title: USRBIN bias2 71
+End
